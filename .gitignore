@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv*
+
+# Datasets, caches, run outputs
+huggingface_cache/
+results/
+.ipynb_checkpoints/
+.pytest_cache/
+
+# Model artifacts
+checkpoints/
+cadquery_tokenizer/
+*.pt
+*.pth
+
+# OS
+.DS_Store
