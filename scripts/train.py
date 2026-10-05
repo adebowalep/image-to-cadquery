@@ -93,7 +93,7 @@ def main() -> None:
     if tokenizer_dir.exists():
         tokenizer = load_tokenizer(tokenizer_dir)
     else:
-        tokenizer = train_tokenizer((row["cadquery"] for row in hf_train), tokenizer_dir)
+        tokenizer = train_tokenizer((text for text in hf_train["cadquery"]), tokenizer_dir)  # text column only: no image decoding
 
     img_transform = build_image_transform()
     train_ds = CADCodeDataset(hf_train, tokenizer, max_len=args.max_seq_len, img_transform=img_transform)

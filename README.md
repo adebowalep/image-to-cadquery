@@ -98,13 +98,13 @@ Then select that kernel in the notebook UI. Finally, confirm the GPU is actually
 
 ### Running on Google Colab (or Kaggle)
 
-The notebooks are built to run unchanged on Colab: the first code cell of each one detects Colab, mounts Drive, clones the repo, and installs only what Colab lacks (`cadquery`, `cadquery-ocp`, `trimesh`, `datasets` — it already ships `torch`/`transformers`/`pandas`). It then puts `src/` and the repo root on `sys.path`, so `from cad_code_gen...` and `import metrics` work with no `pip install -e`.
+The notebooks are built to run unchanged on Colab: the first code cell of each one detects Colab, mounts Drive, clones the repo, installs the `libgl1` system library, and installs only what Colab lacks (`cadquery`, `cadquery-ocp`, `trimesh`, `datasets` — it already ships `torch`/`transformers`/`pandas`). It then puts `src/` and the repo root on `sys.path`, so `from cad_code_gen...` and `import metrics` work with no `pip install -e`.
 
-1. Push this repo to GitHub (private is fine) and set `REPO_URL` in the first cell of `00`/`01`/`02` (private repo: `https://<token>@github.com/<you>/<repo>.git`).
+1. The notebooks clone `REPO_URL` (set in the first cell of `00`/`01`/`02`). For a public repo nothing else is needed; for a private one use `https://<token>@github.com/<you>/<repo>.git` and avoid saving that notebook anywhere public.
 2. Runtime → Change runtime type → a GPU.
 3. Run `01_train_models.ipynb` top to bottom, then `02_evaluate_and_compare.ipynb`.
 
-Everything that must outlive the session — dataset cache, tokenizer, checkpoints, `results/runs.jsonl` — is stored under `STORAGE_ROOT` (`/content/drive/MyDrive/cad_code_gen` on Colab, the repo itself locally). **Training resumes automatically**: every epoch writes `last_state.pt` (model + optimizer + epoch) next to the `ckpt_eNN.pt` files, and re-running `01` after a disconnect continues from there; a model that already finished all `N_EPOCHS` is skipped. `scripts/train.py` does the same (`--no-resume` to start over). The per-epoch `ckpt_eNN.pt` files stay plain `state_dict`s, so evaluation is unaffected.
+Everything that must outlive the session — tokenizer, checkpoints, `results/runs.jsonl` — is stored under `STORAGE_ROOT` (`/content/drive/MyDrive/cad_code_gen` on Colab, the repo itself locally). The ~1 GB dataset cache is deliberately kept on the VM's local disk instead (`/content/hf_cache`): it is memory-mapped and read at random during training, which is slow over the Drive mount, so it is simply re-downloaded each new session. **Training resumes automatically**: every epoch writes `last_state.pt` (model + optimizer + epoch) next to the `ckpt_eNN.pt` files, and re-running `01` after a disconnect continues from there; a model that already finished all `N_EPOCHS` is skipped. `scripts/train.py` does the same (`--no-resume` to start over). The per-epoch `ckpt_eNN.pt` files stay plain `state_dict`s, so evaluation is unaffected.
 
 ## Running the tests
 
