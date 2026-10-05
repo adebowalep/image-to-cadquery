@@ -1,0 +1,54 @@
+[project]
+name = "cad-code-generation"
+version = "0.1.0"
+description = "Vision-to-code model that generates CadQuery scripts from 2D CAD images"
+readme = "README.md"
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    # Pinned exactly: cadquery's own version bounds on cadquery-ocp resolve, by
+    # default, to a cadquery-ocp release that only ships manylinux_2_35 wheels --
+    # which several hosted/older-glibc Linux environments (e.g. Udacity's GPU
+    # workspace, manylinux_2_31) can't install. cadquery-ocp==7.8.1.1 is the newest
+    # release that still ships manylinux_2_31 wheels (cp310-cp313), and it also has
+    # macosx_11_0_{x86_64,arm64} + win_amd64 wheels, so this pin works everywhere
+    # this project runs (local Mac, Udacity Linux GPU workspace, Colab, Windows).
+    "cadquery==2.6.0",
+    "cadquery-ocp==7.8.1.1",
+    "datasets>=3.6.0",
+    "ipykernel>=6.29.5",
+    "scipy>=1.15.3",
+    "trimesh>=4.6.11",
+    "notebook>=7.0.0",
+    "ipywidgets",
+    "jupyter",
+    "torch",
+    "torchvision",
+    "pandas",
+    "numpy",
+    "matplotlib",
+    "seaborn",
+    "pillow",
+    "scikit-learn",
+    "plotly",
+    "tokenizers",
+    "transformers",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+]
+tracking = [
+    "wandb>=0.17.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cad_code_gen"]
